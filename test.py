@@ -32,8 +32,6 @@ for Line in InFile:
 #close the file after the loop is completed
 InFile.close()
 
-#compare lists 
-#list(set(genus_pos).intersection(set(genus_neg)))
 
 
 #find genera that have both positive and negative infections 
@@ -42,7 +40,7 @@ for element in genus_pos:
     if element in genus_neg:
         mixed_genera.append(element)
 
-#write to a file
+#write genera that have both infected and uninfected species to a file
 f= open('mixed_genera.csv','w')
 for element in mixed_genera:
     f.write(element+'\n')
@@ -78,14 +76,53 @@ for element in genus_pos:
 f.close()
 
 
+#count the number of each genus that has a neg infection
+f=open('neg_count3.csv','w')
+for x in set(genus_neg):
+        output="{0} {1}\n".format(x,genus_neg.count(x))
+        f.write(output)
 
-#test file
-#f= open('testinfection.csv','w')
-#f.write("%s %s\n" % (int('mixed_genera'), int('only_neg_genera')))
-#print >> f,int('mixed_genera'), int('only_neg_genera')
 
-#for x in set(genus_neg):
-    #print"{0} {1}\n".format(x,genus_neg.count(x))
 
-#for x in set(genus_neg):
-    #neg_count.append(x,genus_neg.count(x))
+#use panda to count the number of times each value appears in a particular column
+import csv
+import pandas 
+data = pandas.read_csv("Russell.csv", delimiter=r"\t")
+datasub = data[data['Wolbachia'] == '+']
+print datasub.groupby(['Genus'])['Wolbachia'].count() 
+
+wol = data.groupby(['Genus'])['Genus'].count()
+print wol.sort
+
+
+
+
+#get names of species represented in Moreau tree
+phylo = []
+ants = []
+newants = []
+#extract species list from data
+with open('RussellData.py') as infile:
+    for line in infile:
+        ants.append(line.split()[4])
+#remove "sp." from list 
+for element in ants:
+    if 'sp.' not in element:
+        newants.append(element)
+#make list of species with known tree data 
+for element in newants:
+    if element in open('Moreau.newick.file.txt').read():
+        phylo.append(element)
+#count how many species returned, 90
+print len(phylo)
+#write to a new file
+f = open('species2.txt', 'w')
+for element in phylo:
+    f.write(element+'\n')
+f.close()
+
+
+
+
+
+
