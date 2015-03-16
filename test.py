@@ -83,3 +83,9 @@ f.close()
 #f= open('testinfection.csv','w')
 #f.write("%s %s\n" % (int('mixed_genera'), int('only_neg_genera')))
 #print >> f,int('mixed_genera'), int('only_neg_genera')
+
+#for x in set(genus_neg):
+    #print"{0} {1}\n".format(x,genus_neg.count(x))
+
+#for x in set(genus_neg):
+    #neg_count.append(x,genus_neg.count(x))
