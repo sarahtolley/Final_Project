@@ -10,7 +10,7 @@ ggplot(Russell, aes(x=Genus, fill=Wolbachia)) + geom_bar() + theme(axis.line=ele
 
 #life history data
 lifehis<- read.csv("~/Desktop/newdata.csv", header=T)
-#plot colony propagation strategy for surved species 
+#plot colony propagation strategy for surveyed species with infection status as fill 
 ggplot(lifehis, aes(x=colony_propagation, fill=Infection_status)) + geom_bar(stat="bin", position=position_dodge()) + theme(panel.background=element_blank(),panel.border=element_blank(),plot.background=element_blank(), axis.line=element_blank(),axis.text.y=element_blank())
 
 
