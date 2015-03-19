@@ -1,39 +1,10 @@
 #Moreau data
 
-#set wd
-setwd("/Users/sarahaulii/Desktop")
-
 library(ape)
 library(geiger)
 
 #get tree
 my.phylo <- read.tree("~/Desktop/Moreau.newick.file.txt")
-
-
-
-#print the original file to R console so you can see the original Newick format
-write.tree(my.phylo)
-#Alternatively, read a Nexus formatted phylogeny into R 
-my.nexus.phylo <- ("read.nexus.file.txt")
-#print the original Nexus format to R console 
-write.nexus(my.phylo)
-#explore contents and structure of tree
-my.phylo
-is.rooted(my.phylo)
-is.ultrametric(my.phylo)
-names(my.phylo)
-my.phylo$edge
-my.phylo$tip.label
-#ordered from the species on the bottom of the phylogeny when plotted
-#plot 
-plot(my.phylo)
-#plot using fan type
-plot(my.phylo, type="fan")
-my.phylo$node.label
-my.phylo$edge.length
-#A vector of branch (i.e., edge) lengths is returned. The length of this vector is equal to the number of branches in our phylogeny, and the order of the values corresponds to the order of the branches described under my.phylo$edge . Thus, if we wanted to make a matrix that had the information regarding the node numbers for the beginning and end points of each branch in the first two columns and the length of that branch in the third column we could do the following:
-cbind(my.phylo$edge, my.phylo$edge.length)
-
 
 
 #species that we want to keep. List generated and formatted in python
@@ -62,13 +33,20 @@ pruned.tree<-drop.tip(pruned.tree3, "Formica_wheeleri")
 pruned.tree$tip.label
 write.tree(pruned.tree)
 
+
+#this section is under construction see next section for plot
 #add trait data to tree 
 library(phylobase)
-# infection - 0=no wolbachia infection, 1=wolbachia present in species
-obj<- phylo4d(as(pruned.tree,"phylo4"), data.frame(infection=c(0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0)))
-print(obj)
+# infection: 0=no wolbachia infection, 1=wolbachia present in species
+obj.tree<- phylo4d(as(pruned.tree,"phylo4"), data.frame(infection=c(0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0)))
+print(obj.tree)
 #now plot tree with infection presence 
-plot(obj)
+plot(obj.tree)
+#I cannot figure out how to reduce the tip label size in this plot, cex does not work here 
+
+
+#show infected species on prunned tree in blue
+plot(pruned.tree, cex=0.5, main= "Pruned Tree", tip.color=c("black", "blue", "black", "blue", "black", "black", "blue", "black", "black", "blue", "blue", "black", "black", "black", "black", "black", "black", "blue", "black", "black", "blue", "black", "black", "black", "black", "black", "black", "black", "blue", "black", "black", "blue", "black", "black", "black", "black", "black", "black", "black", "blue", "black", "black", "blue", "black", "blue", "black", "black", "black", "blue", "black", "black", "black", "blue", "blue", "black", "black", "black", "blue", "black", "black", "black", "black", "black", "blue", "blue", "blue", "black", "black", "black", "black", "black", "blue", "black", "blue", "black", "black", "black", "black", "black", "black", "black", "black"))
 
 
 
@@ -79,6 +57,7 @@ plot(obj)
 
 
 
+#sandbox(stuff I am working on)
 library(corHMM)
 #wolbachia infection status 
 woldata <- read.csv("~/Desktop/test1.csv", header=T)
@@ -112,4 +91,30 @@ woltree<- phylo4d(pruned.tree, tip.data=woldata)
 extractTree(woltree)
 try(phylo4d(as(pruned.tree,"phylo4"), data.frame(infection=c(0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0)), silent=TRUE)
 
-tree.musse.mulitrait(c())
+
+
+
+
+#basic tree commands
+#print the original file to R console so you can see the original Newick format
+write.tree(my.phylo)
+#Alternatively, read a Nexus formatted phylogeny into R 
+my.nexus.phylo <- ("read.nexus.file.txt")
+#print the original Nexus format to R console 
+write.nexus(my.phylo)
+#explore contents and structure of tree
+my.phylo
+is.rooted(my.phylo)
+is.ultrametric(my.phylo)
+names(my.phylo)
+my.phylo$edge
+my.phylo$tip.label
+#ordered from the species on the bottom of the phylogeny when plotted
+#plot 
+plot(my.phylo)
+#plot using fan type
+plot(my.phylo, type="fan")
+my.phylo$node.label
+my.phylo$edge.length
+#A vector of branch (i.e., edge) lengths is returned. The length of this vector is equal to the number of branches in our phylogeny, and the order of the values corresponds to the order of the branches described under my.phylo$edge . Thus, if we wanted to make a matrix that had the information regarding the node numbers for the beginning and end points of each branch in the first two columns and the length of that branch in the third column we could do the following:
+cbind(my.phylo$edge, my.phylo$edge.length)
