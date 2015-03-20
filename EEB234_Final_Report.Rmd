@@ -1,0 +1,77 @@
+---
+title: "EEB234 Final Report"
+author: "Sarah Tolley"
+date: "March 20, 2015"
+output: pdf_document
+---
+
+#Introduction
+Wolbachia ia a maternally-transmitted intracellular bacteria infecting the vast majority of all insect species. Deleterious effects are common among sexually reproducing insect species. These reproductive manipulations include feminization of genetic males, male-killing, cytoplasmic incompatibility, and parthenogenesis. Interestingly, despite being found in over 100 ant species, with numerous independent infection events, there are no known deleterious effects observed in ants. Eusociality in ants presents an evolutionary dilemma for ants as sterile female workers are as much a dead end to Wolbachia as males in a population. However, in eusocial systems, future reproductive queens cannot arise without the help of sterile female workers. Although the role of Wolbachia in ants has yet to be deciphered, it appears Wolbachia acts more like a commenal than a parasite in its ant hosts. Investigating infection patterns alongside the diverse life history characteristics seen in ant hosts may indicate traits that help proliferate the spread of Wolbachia. 
+
+#My project
+The present study seeks to look for patterns of Wolbachia infection across the ants. Firstly, data was extracted and formatted from Jacob Russell's meta-analysis of Wolbachia infection across arthropods. Python was used to separate the data based on presence or absence of Wolbachia infection. I used a loop to read through each line and write the genus and species name of all infected or uninfected species to their respective file. These lists were then further divided to look for genera that contained only infected or only uninfected ants. The code used for this section is labeled "test.py" and the supporting data files should be clear in the embedded comments. 
+
+Next, I attempted to fill in certain life history characteristics for a small subset of sampled ants. The life history characteristics examined included:
+
+  - Reproduction method (alate queens, ergatoid queens, gamerates)
+  - Mode of colony propagation (haplometrosis, pleometrosis, budding, fissioning)
+  - Social structure (monogyny, polygyny)
+
+Surprisingly, uncovering these characteristics turned out to be one of the most tedious aspects of the project and as such, this is a list that I hope to continue to expand. 
+
+I used the ggplot2 library in R to make some visual representations of my data. The first histogram is of all species pulled from Russell's meta-analysis. Each bar represents a genera and the fill color is the status of Wolbachia infection for the species surveyed. 
+
+```{r chunk, echo=FALSE, fig.width=9,fig.height=6}
+library(ggplot2)
+Russell<- read.csv("~/Desktop/russellmeta.csv", header=T) 
+ggplot(Russell, aes(x=Genus, fill=Wolbachia)) + geom_bar() + theme(axis.line=element_blank(),axis.text.x=element_blank(),      panel.background=element_blank(),panel.border=element_blank(),plot.background=element_blank())
+```
+
+This next graph is a sample of what I hope to continue to build upon. Each bar is representative of the number of species with a particular host life history characteristic for the mode of colony propagation (budding, fission, haplometrosis, pleometrosis). This is, however, just a small subset of the species surved and is not yet indicative of Wolbachia infection trends. 
+
+```{r chunk2, echo=FALSE, fig.width=5,fig.height=4}
+lifehis<- read.csv("~/Desktop/newdata.csv", header=T)
+ggplot(lifehis, aes(x=colony_propagation, fill=Infection_status)) + geom_bar(stat="bin", position=position_dodge()) + theme(panel.background=element_blank(),panel.border=element_blank(),plot.background=element_blank(), axis.line=element_blank(),axis.text.y=element_blank())
+```
+
+
+The code for the above graphs is labeled "FinalProject.R" and uses the data sets, "russellmeta.csv" and "newdata.csv". Commenting embedded in the R code should provide further clarity. 
+
+Finally, I used phylogenetic data from Corrie Moreau to construct a tree for ant species that were also found in Russell's data. I used python to find the species names that appeared in both data sets (bottom of "test.py") and then pruned the tree in R ("Moreau.R"). I then colored the tip labels to indicate the infected species on the tree. 
+
+```{r chunk3, echo=FALSE, fig.height=8, fig.width=9}
+library(ape)
+library(geiger)
+
+#get tree
+my.phylo <- read.tree("~/Desktop/Moreau.newick.file.txt")
+
+
+#species that we want to keep. List generated and formatted in python
+species<- c("smaragdina", "laticeps", "epedana", "pallipes", "simoni", "mayri", "nitidiceps", "gracillipes", "texana", "stygia", "mocquerysi", "hispanicus", "ocreatus", "emeryi", "feae", "unimaculatus", "augustae", "unicorna", "concenta", "navajoa", "gilva", "gigantea", "imitator", "mayri", "wilverthi", "elegans", "hamatum", "brunneum", "negrosensis", "provancheri", "latispina", "hispanicum", "microps", "panamensis", "inexorata", "spadius", "spininodis", "alienus", "keiteli", "luctuosum", "transfuga", "latreillei", "mayri", "julianus", "destructor", "lobosa", "castanea", "fulviculis", "mexicanus", "incompleta", "brunnea", "williamsi", "rogeri", "nigrescens", "esenbecki", "glaber", "picardi", "clarus", "transversa", "insularis", "stigma", "clavata", "rhea", "wheeleri", "cordatus", "punctata", "maricopa", "vindex", "imparis", "batesi", "typhlops", "apache", "pulchella", "metallica", "snellingi", "opacum", "albipes", "tricarinatus", "hispidum", "jamaicensis", "subterranea", "rogenhoferi", "invicta", "pallipes", "texana", "punctata", "myops", "emeryi", "castanea", "butteli")
+species2<- data.frame(species)
+
+#split on underscore 
+library(reshape2)
+df<-colsplit(my.phylo$tip.label, "_", names = c("Genus", "Species"))
+treespecies<- df[2]
+
+#get rid of phylogenetic data from species not present in Russell data
+dropset <- which(!treespecies$Species %in% species2$species)
+#get names of species to remove from tree
+dropnames<-df[dropset,]
+#add underscore back in to match tips in tree
+dropnames2 <- paste(dropnames$Genus, dropnames$Species, sep="_")
+
+#prune tree
+pruned.tree1<- drop.tip(my.phylo, my.phylo$tip.label[match(dropnames2, my.phylo$tip.label)])
+#also need to get rid of Proatta butteli and Formica Wheeleri (matched species name belonging to different genus)
+pruned.tree3<-drop.tip(pruned.tree1,"Proatta_butteli")
+pruned.tree<-drop.tip(pruned.tree3, "Formica_wheeleri")
+
+plot(pruned.tree, cex=0.5, main= "Pruned Tree", tip.color=c("black", "blue", "black", "blue", "black", "black", "blue", "black", "black", "blue", "blue", "black", "black", "black", "black", "black", "black", "blue", "black", "black", "blue", "black", "black", "black", "black", "black", "black", "black", "blue", "black", "black", "blue", "black", "black", "black", "black", "black", "black", "black", "blue", "black", "black", "blue", "black", "blue", "black", "black", "black", "blue", "black", "black", "black", "blue", "blue", "black", "black", "black", "blue", "black", "black", "black", "black", "black", "blue", "blue", "blue", "black", "black", "black", "black", "black", "blue", "black", "blue", "black", "black", "black", "black", "black", "black", "black", "black"))
+
+```
+
+#Future goals
+I hope to continue to expand my data to include life history characteristics for all species surveyed in Russell's analysis. In particular, I want to learn more about the species that overlap with Moreau's data. I have been attempting to add binary traits to my pylogenetic tree however this is still a work in progress. This class has laid a great foundation for the tools I will need as I continue to pursue this project for my thesis. Thank you both for all of your guidance and help! 
