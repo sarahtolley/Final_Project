@@ -2,7 +2,7 @@
 title: "EEB234 Final Report"
 author: "Sarah Tolley"
 date: "March 20, 2015"
-output: pdf_document
+output: html_document
 ---
 
 #Introduction
@@ -75,3 +75,5 @@ plot(pruned.tree, cex=0.5, main= "Pruned Tree", tip.color=c("black", "blue", "bl
 
 #Future goals
 I hope to continue to expand my data to include life history characteristics for all species surveyed in Russell's analysis. In particular, I want to learn more about the species that overlap with Moreau's data. I have been attempting to add binary traits to my pylogenetic tree however this is still a work in progress. This class has laid a great foundation for the tools I will need as I continue to pursue this project for my thesis. Thank you both for all of your guidance and help! 
+
+Link to my github repository: https://github.com/sarahtolley/Final_Project
